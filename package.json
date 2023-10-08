@@ -1,0 +1,20 @@
+{
+  "name": "analytics-slack-bot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@slack/bolt": "^3.12.1",
+    "axios": "^1.5.1",
+    "dotenv": "^16.0.3",
+    "ngrok": "^4.3.3",
+    "nodemon": "^3.0.1"
+  }
+}
