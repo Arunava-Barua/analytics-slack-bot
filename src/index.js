@@ -52,7 +52,7 @@ app.action("actionId-channel", async ({body, ack, client}) => {
 app.action("actionId-start", async ({body, ack, client}) => {
     // Acknowledge the action
     await ack();
-    // console.log("ActionId Start Date Body: ", body);
+    
     startDate = body.actions[0].selected_date;
 
     console.log("Start Date is here ✅:", startDate)
@@ -61,7 +61,7 @@ app.action("actionId-start", async ({body, ack, client}) => {
 app.action("actionId-end", async ({body, ack, client}) => {
     // Acknowledge the action
     await ack();
-    // console.log("ActionId End Date Body: ", body);
+    
     endDate = body.actions[0].selected_date;
 
     console.log("End Date is here 👿:", endDate)
@@ -70,7 +70,7 @@ app.action("actionId-end", async ({body, ack, client}) => {
 app.action("actionId-radio", async ({body, ack, client}) => {
     // Acknowledge the action
     await ack();
-    // console.log("ActionId Chain Name Body: ", body);
+    
     chain = body.actions[0].selected_option.text.text.toLowerCase();
 
     console.log("Chain Name is here 🥶:", chain)
