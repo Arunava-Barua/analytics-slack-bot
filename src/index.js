@@ -1,8 +1,11 @@
 const { App } = require("@slack/bolt");
+const axios = require("axios");
+
 require("dotenv").config();
 
-const { analyticsView } = require("./analytics-view");
-const { homeView } = require("./home-view");
+const { analyticsView, homeView } = require("./views/index");
+const { getChannels, getChains, getChainIds } = require("./data/index");
+const { cleaner } = require("./helper/index");
 
 let channelName, endDate, startDate, chain;
 
@@ -40,41 +43,44 @@ app.event("app_home_opened", ({ event, say, client }) => {
   }
 });
 
-app.action("actionId-channel", async ({body, ack, client}) => {
-    // Acknowledge the action
-    await ack();
-    // console.log("ActionId Channel Name Body: ", body);
-    channelName = body.actions[0].value.toLowerCase();
+app.action("actionId-channel", async ({ body, ack, client }) => {
+  // Acknowledge the action
+  await ack();
+  // console.log("ActionId Channel Name Body: ", body);
 
-    console.log("Channel Name is here 🍋:", channelName)
-})
+  // channelName = body.actions[0].value.toLowerCase(); // <--- Pass to Function
+  channelName = body.actions[0].value;
 
-app.action("actionId-start", async ({body, ack, client}) => {
-    // Acknowledge the action
-    await ack();
-    
-    startDate = body.actions[0].selected_date;
+  console.log("Channel Name is here 🍋:", channelName);
+});
 
-    console.log("Start Date is here ✅:", startDate)
-})
+app.action("actionId-start", async ({ body, ack, client }) => {
+  // Acknowledge the action
+  await ack();
 
-app.action("actionId-end", async ({body, ack, client}) => {
-    // Acknowledge the action
-    await ack();
-    
-    endDate = body.actions[0].selected_date;
+  startDate = body.actions[0].selected_date;
 
-    console.log("End Date is here 👿:", endDate)
-})
+  console.log("Start Date is here ✅:", startDate);
+});
 
-app.action("actionId-radio", async ({body, ack, client}) => {
-    // Acknowledge the action
-    await ack();
-    
-    chain = body.actions[0].selected_option.text.text.toLowerCase();
+app.action("actionId-end", async ({ body, ack, client }) => {
+  // Acknowledge the action
+  await ack();
 
-    console.log("Chain Name is here 🥶:", chain)
-})
+  endDate = body.actions[0].selected_date;
+
+  console.log("End Date is here 👿:", endDate);
+});
+
+app.action("actionId-radio", async ({ body, ack, client }) => {
+  // Acknowledge the action
+  await ack();
+
+  // chain = body.actions[0].selected_option.text.text.toLowerCase(); // <--- Pass to Function
+  chain = body.actions[0].selected_option.text.text;
+
+  console.log("Chain Name is here 🥶:", chain);
+});
 
 app.action("actionId-button", async ({ body, ack, client }) => {
   // with actionId
@@ -82,8 +88,41 @@ app.action("actionId-button", async ({ body, ack, client }) => {
   await ack();
   console.log("ActionId Button Body: ", body);
 
+  let imageURL;
+
   // *******************
   // API calls here
+
+  try {
+    const formattedChannelName = cleaner(channelName);
+    const formattedChainName = cleaner(chain);
+    const chains = getChains();
+    const channels = getChannels();
+    const chainIds = getChainIds();
+
+    const channelAddress = channels[formattedChannelName];
+    const chainName = chains[formattedChainName];
+    const chainId = chainIds[formattedChainName];
+    
+    console.log(
+      "Channels and chain🧟‍♂️: ",
+      channels[formattedChannelName],
+      chains[formattedChainName]
+    );
+
+    const { data } =
+      chainId &&
+      channelAddress &&
+      (await axios(
+        `https://backend.epns.io/apis/v1/channels/eip155:${chainId}:${channelAddress}/feeds`
+      ));
+
+    imageURL = data.feeds[0].payload.data.icon
+    console.log("Api Response here: ", data.feeds[0]);
+  } catch (error) {
+    console.error("Error while fetching data from API💥", error);
+  }
+
   // *******************
 
   try {
@@ -96,7 +135,7 @@ app.action("actionId-button", async ({ body, ack, client }) => {
         type: "home",
         callback_id: "home_view",
 
-        blocks: analyticsView(channelName, chain),
+        blocks: analyticsView(channelName, chain, 0, 0, imageURL),
       },
     });
   } catch (error) {
