@@ -3,8 +3,25 @@ const analyticsView = (
   chain = "",
   subscriberCount = 0,
   notificationCount = 0,
-  imgUrl = ""
+  imgUrl = "",
+  feeds
 ) => {
+
+  let results = []; // epoch
+  let obj = {
+    type: "plain_text",
+    text: "",
+    emoji: true,
+  }
+
+  feeds.map((element, i) => {
+    let newObj = {
+      ...obj, text: element.epoch
+    }
+
+    results.push(newObj);
+  })
+
   let view = [
     {
       type: "divider",
@@ -287,13 +304,17 @@ const analyticsView = (
     {
       type: "section", // Analytics
       block_id: "sectionBlockOnlyFields",
-      fields: [
-        {
-          type: "plain_text",
-          text: `${"Analytics 1"}`,
-          emoji: true,
-        },
-        {
+      fields: results,
+    },
+  ];
+
+  return view;
+};
+
+module.exports = { analyticsView };
+
+/*
+{
           type: "plain_text",
           text: `${"Analytics 2"}`,
           emoji: true,
@@ -318,11 +339,4 @@ const analyticsView = (
           text: `${"Analytics 6"}`,
           emoji: true,
         },
-      ],
-    },
-  ];
-
-  return view;
-};
-
-module.exports = { analyticsView };
+*/

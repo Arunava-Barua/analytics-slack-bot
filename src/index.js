@@ -88,7 +88,7 @@ app.action("actionId-button", async ({ body, ack, client }) => {
   await ack();
   console.log("ActionId Button Body: ", body);
 
-  let imageURL;
+  let imageURL, notificationCount, feeds;
 
   // *******************
   // API calls here
@@ -118,6 +118,8 @@ app.action("actionId-button", async ({ body, ack, client }) => {
       ));
 
     imageURL = data.feeds[0].payload.data.icon
+    notificationCount = data.feeds.length
+    feeds = data.feeds;
     console.log("Api Response here: ", data.feeds[0]);
   } catch (error) {
     console.error("Error while fetching data from API💥", error);
@@ -135,7 +137,7 @@ app.action("actionId-button", async ({ body, ack, client }) => {
         type: "home",
         callback_id: "home_view",
 
-        blocks: analyticsView(channelName, chain, 0, 0, imageURL),
+        blocks: analyticsView(channelName, chain, 0, notificationCount, imageURL, feeds),
       },
     });
   } catch (error) {
