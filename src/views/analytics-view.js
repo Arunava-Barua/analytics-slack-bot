@@ -14,9 +14,11 @@ const analyticsView = (
     emoji: true,
   }
 
-  feeds.map((element, i) => {
+  feeds?.map((element, i) => {
+    let formattedDateTime = new Date(element.epoch).toString().slice(0,24);
+    console.log('Formatted time: ', formattedDateTime.toString().slice(0,24));
     let newObj = {
-      ...obj, text: element.epoch
+      ...obj, text: `Notification ${i+1}: ${formattedDateTime}`
     }
 
     results.push(newObj);

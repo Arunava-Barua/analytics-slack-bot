@@ -88,7 +88,7 @@ app.action("actionId-button", async ({ body, ack, client }) => {
   await ack();
   console.log("ActionId Button Body: ", body);
 
-  let imageURL, notificationCount, feeds;
+  let imageURL, notificationCount, feeds, channelAddress, chainName, chainId, subscriberCount;
 
   // *******************
   // API calls here
@@ -100,9 +100,9 @@ app.action("actionId-button", async ({ body, ack, client }) => {
     const channels = getChannels();
     const chainIds = getChainIds();
 
-    const channelAddress = channels[formattedChannelName];
-    const chainName = chains[formattedChainName];
-    const chainId = chainIds[formattedChainName];
+    channelAddress = channels[formattedChannelName];
+    chainName = chains[formattedChainName];
+    chainId = chainIds[formattedChainName];
     
     console.log(
       "Channels and chain🧟‍♂️: ",
@@ -125,6 +125,22 @@ app.action("actionId-button", async ({ body, ack, client }) => {
     console.error("Error while fetching data from API💥", error);
   }
 
+  try {
+    // const {data} = (await axios(`https://${
+    //   ENV === `staging` ? "backend-staging" : "backend"
+    // }.epns.io/apis/v1/channels/eip155:${ENV == "staging" ? 5 : 1}:${address}`));
+    const {data} = (await axios(`https://backend.epns.io/apis/v1/channels/eip155:${chainId}:${channelAddress}`));
+
+    subscriberCount = data.subscriber_count;
+    channelName = data.name;
+
+    console.log("Subscribers Api Response here: ", data);
+    console.log("Subscribers Count: ", data.subscriber_count);
+
+  } catch (error) {
+    console.error("Error while fetching subscribers from API💥", error);
+  }
+
   // *******************
 
   try {
@@ -137,7 +153,7 @@ app.action("actionId-button", async ({ body, ack, client }) => {
         type: "home",
         callback_id: "home_view",
 
-        blocks: analyticsView(channelName, chain, 0, notificationCount, imageURL, feeds),
+        blocks: analyticsView(channelName, chain, subscriberCount, notificationCount, imageURL, feeds),
       },
     });
   } catch (error) {
