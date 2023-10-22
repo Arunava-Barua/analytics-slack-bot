@@ -1,30 +1,77 @@
-const analyticsView = (
-  channelName = "",
-  chain = "",
-  subscriberCount = 0,
-  notificationCount = 0,
-  imgUrl = "",
-  feeds
-) => {
-  let results = []; // epoch
-  let obj = {
+const generalStatusView = (glWorkingChannels, glNotWorkingChannels) => {
+  // console.log('Working and Not working global🌍 channels from view: ', glWorkingChannels, glNotWorkingChannels)
+
+  let workingResults = [],
+    notWorkingResults = [];
+
+  let workingSections = [],
+    notWorkingSections = [];
+
+  let workingPartitions = 0,
+    notWorkingPartitions = 0;
+
+  workingPartitions = Math.ceil(glWorkingChannels.length / 10);
+  notWorkingPartitions = Math.ceil(glNotWorkingChannels.length / 10);
+
+  let status = {
     type: "plain_text",
-    text: "",
+    text: "", // Working data
     emoji: true,
   };
 
-  feeds?.map((element, i) => {
-    let formattedDateTime = new Date(element.epoch).toString().slice(0, 24);
-    console.log("Formatted time: ", formattedDateTime.toString().slice(0, 24));
-    let newObj = {
-      ...obj,
-      text: `Notification ${i + 1}: ${formattedDateTime}`,
+  glWorkingChannels.map((channel, index) => {
+    let newStatus = {
+      ...status,
+      text: `${index + 1}. Name: ${channel.channelName} Last Notif: ${
+        channel.lastNotif
+      } Chain: ${channel.chain}`,
     };
-
-    results.push(newObj);
+    workingResults.push(newStatus);
   });
 
-  let view = [
+  glNotWorkingChannels.map((channel, index) => {
+    let newStatus = {
+      ...status,
+      text: `${index + 1}. Name: ${channel.channelName} Chain: ${
+        channel.chain
+      }`,
+    };
+    notWorkingResults.push(newStatus);
+  });
+
+  /*
+  type: "section",
+  block_id: "Working channels",
+  fields: workingResults.slice(0, 10),
+  */
+
+  for (let i = 0; i < workingPartitions; i++) {
+    let workingChannelLength = glWorkingChannels.length;
+
+    if (workingChannelLength - (i * 10 + 10) < 10) {
+      let newSections = `{
+            "type": "section",
+            "block_id": "Working Channels ${i + 1}"
+            "fields": ${workingResults.slice(i * 10, workingChannelLength)}
+        }`;
+
+      workingSections.push(newSections);
+    } else {
+      let newSections = `{
+            "type": "section",
+            "block_id": "Working Channels ${i + 1}"
+            "fields": ${workingResults.slice(i * 10, i * 10 + 10)}
+        }`;
+
+      workingSections.push(newSections);
+    }
+  }
+
+  console.log('Working sections here: ', workingSections);
+
+  console.log("Not working🔮 channels from view: ", notWorkingResults);
+
+  const view = [
     {
       type: "divider",
     },
@@ -46,9 +93,6 @@ const analyticsView = (
       },
     },
     {
-      type: "divider",
-    },
-    {
       dispatch_action: true,
       type: "input",
       element: {
@@ -60,9 +104,6 @@ const analyticsView = (
         text: "Enter Channel Name",
         emoji: true,
       },
-    },
-    {
-      type: "divider",
     },
     {
       type: "header",
@@ -96,9 +137,6 @@ const analyticsView = (
           action_id: "actionId-end",
         },
       ],
-    },
-    {
-      type: "divider",
     },
     {
       type: "header",
@@ -168,9 +206,6 @@ const analyticsView = (
       ],
     },
     {
-      type: "divider",
-    },
-    {
       type: "actions",
       elements: [
         {
@@ -228,153 +263,69 @@ const analyticsView = (
       type: "header",
       text: {
         type: "plain_text",
-        text: "Results & Analytics ✅",
+        text: "Channels Health Check 💟",
         emoji: true,
       },
     },
     {
-      type: "image",
-      block_id: "image4",
-      image_url: `${imgUrl}`, // <--- Image URL
-      alt_text: "Channel logo",
+      type: "section",
+      block_id: "sectionBlockOnlyPlainTxt",
+      text: {
+        type: "plain_text",
+        text: `Number of Working Channels✅: ${glWorkingChannels.length}`,
+        emoji: true,
+      },
+    },
+    ...workingSections,
+    {
+      type: "section",
+      block_id: "Non-working channels",
+      text: {
+        type: "plain_text",
+        text: `Number of NOT working Channels💥: ${glNotWorkingChannels.length}`,
+        emoji: true,
+      },
     },
     {
-      type: "rich_text",
-      elements: [
-        {
-          type: "rich_text_list",
-          style: "bullet",
-          indent: 0,
-          border: 0,
-          elements: [
-            {
-              type: "rich_text_section",
-              elements: [
-                {
-                  type: "text",
-                  text: "Channel Name ",
-                  style: {
-                    bold: true,
-                  },
-                },
-                {
-                  type: "emoji",
-                  name: "black_nib",
-                  unicode: "2712-fe0f",
-                },
-                {
-                  type: "text",
-                  text: `: ${channelName}`, // Channel Name
-                },
-              ],
-            },
-            {
-              type: "rich_text_section",
-              elements: [
-                {
-                  type: "text",
-                  text: "Chain ",
-                  style: {
-                    bold: true,
-                  },
-                },
-                {
-                  type: "emoji",
-                  name: "link",
-                  unicode: "1f517",
-                },
-                {
-                  type: "text",
-                  text: `: ${chain}`, // Chain Name
-                },
-              ],
-            },
-            {
-              type: "rich_text_section",
-              elements: [
-                {
-                  type: "text",
-                  text: "Subscribers ",
-                  style: {
-                    bold: true,
-                  },
-                },
-                {
-                  type: "emoji",
-                  name: "man-frowning",
-                  unicode: "1f64d-200d-2642-fe0f",
-                },
-                {
-                  type: "text",
-                  text: ": ",
-                },
-                {
-                  type: "text",
-                  text: `${subscriberCount}`, // Subscribers
-                },
-              ],
-            },
-            {
-              type: "rich_text_section",
-              elements: [
-                {
-                  type: "text",
-                  text: "Notifications ",
-                  style: {
-                    bold: true,
-                  },
-                },
-                {
-                  type: "emoji",
-                  name: "bell",
-                  unicode: "1f514",
-                },
-                {
-                  type: "text",
-                  text: `: ${notificationCount}`, // Total Notifications
-                },
-              ],
-            },
-          ],
-        },
-      ],
+      type: "section",
+      block_id: "NotWorkingChannels",
+      fields: notWorkingResults.slice(0, 10),
     },
     {
-      type: "section", // Analytics
-      block_id: "sectionBlockOnlyFields",
-      fields: results,
+      type: "divider",
     },
   ];
 
   return view;
 };
 
-module.exports = { analyticsView };
-
 /*
-{
-          type: "plain_text",
-          text: `${"Analytics 2"}`,
-          emoji: true,
-        },
-        {
-          type: "plain_text",
-          text: `${"Analytics 3"}`,
-          emoji: true,
-        },
-        {
-          type: "plain_text",
-          text: `${"Analytics 4"}`,
-          emoji: true,
-        },
-        {
-          type: "plain_text",
-          text: `${"Analytics 5"}`,
-          emoji: true,
-        },
-        {
-          type: "plain_text",
-          text: `${"Analytics 6"}`,
-          emoji: true,
-        },
+    let arr = [{
+      type: "section",
+      block_id: "Working",
+      fields: [{
+				"type": "plain_text",
+				"text": "Name: Aave, Chain: Ethereum",
+				"emoji": true
+			},
+			{
+				"type": "plain_text",
+				"text": "Name: Aave, Chain: Ethereum",
+				"emoji": true
+			}],
+    },{
+      type: "section",
+      block_id: "NotWorkingChannels",
+      fields: [{
+				"type": "plain_text",
+				"text": "Name: Aave, Chain: Ethereum",
+				"emoji": true
+			},
+			{
+				"type": "plain_text",
+				"text": "Name: Aave, Chain: Ethereum",
+				"emoji": true
+			}]
+    },]
 */
+module.exports = { generalStatusView };

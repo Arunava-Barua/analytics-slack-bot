@@ -1,11 +1,57 @@
 const getChannels = () => {
-    let data = {
-        shapeshift: '0x90A48D5CF7343B08dA12E067680B4C6dbfE551Be',
-        ens: '0x983110309620D911731Ac0932219af06091b6744',
-        thankarb: '0x26C8C84adDA6dbA89E93f139D48c0E39B3a6A8fF'
-    }
+  let data = {
+    shapeshift: "0x90A48D5CF7343B08dA12E067680B4C6dbfE551Be",
+    ens: "0x983110309620D911731Ac0932219af06091b6744",
+    thankarb: "0x26C8C84adDA6dbA89E93f139D48c0E39B3a6A8fF",
+    "1inch": "0x1a9dDEf485674fC60a269cf97FAbc6b8728A3497",
+    aave: "0xAA940b3501176af328423d975C350d0d1BaAae50",
+    angleprotocol: "0xa2dee32662f6243da539bf6a8613f9a9e39843d3",
+    apeswap: "0x0e255B1900b8cE23f8E818C7Ee08cfd5b41df748",
+    aragon: "0xaf962c18538A6498AcC9980b3Da74E0D9A131eBa",
+    armor: "0x5afedef166bd626b3043cb1d53e16ea9bf863e06",
+    bancor: "0x7F41abf7fDb9E4A6373EC3BAB3Df814b5CCceCC3",
+    bankless: "0x4E15B14B9950A04370E36f2Ec05546ED5867ADeF",
+    boardroom: "0xb1676B5Ab63F01F154bb9938F5e8999d9Da5444B",
+    btctracker: "0x03EAAAa48ea78d1E66eA3458364d553AD981871E",
+    carrot: "0x174e4Bb368B9a31661B4C35bE595369fF1A68a13",
+    coinDesk: "0xe56f1d3edfff1f25855aef744cafe7991c224fff",
+    cryptocurrencyjobs: "0xde3e447E125FA2391DC9BCbfA0B821424422FEAF",
+    cryptomanga: "0x0B430A1651E6A64510afC97195040359941d0b23",
+    cvi: "0x2dbf5aFead4759E6151590E4a8F6cD596B7044F8",
+    decentraland: "0xBCAc4dafB7e215f2F6cb3312aF6D5e4F9d9E7eDA",
+    developerdao: "0x54728f10F525193A61Ded237707f2d5022cA4977",
+    dYdX: "0x23c6b8fB0557FD5e6696BceF3fD4855E0d7018C0",
+    elementdao: "0x349da2A6825284E9E181D46D664b95aecE86da56",
+    pushgovernance: "0xfE4A6Fbd27B496855245A1e8047F693f0aDfDb08",
+    ethgaspricetracker: "0x2B8ffb4460550Dbe8Ec1cEA9C1B61322dB56B082",
+    ethindia: "0x64F4fba925CbDe309acC875b8Af2feb07f2aCCA0",
+    ethsignsignatures: "0x77f319B1d9c43a8B729399f81515166632100744",
+    ethtracker: "0xDBc5936E4daaE94F415C39D284f6a69c4d553F2F",
+    fabwelt: "0x361Cb6BE977d0113A33914A8f952Ced95747F793",
+    goodghosting: "0xe8381F84a32A4C2B08c328BfF68c0E889a34F255",
+    googlebigquery: "0xf4b71ceF90736Eb644Cc678b2C795ACdeaC198E1",
+    idlefinance: "0xFb3bD022D5DAcF95eE28a6B07825D4Ff9C5b3814",
+    kyberswap: "0x91c9D4373B077eF8082F468C7c97f2c499e36F5b",
+    lensprotocol: "0xef6426D522CfE5B7Ae5dB05623aB0Ef78023dBe0",
+    lifi: "0xCB1e9fA11Edd27098A6B2Ff23cB6b79183ccf8Ee",
+    mahadao: "0x64A971F0D01b3555Ac60B9Bd151d5B7A75cf12Fd",
+    makerdao: "0x8Cd0ad5C55498Aacb72b6689E1da5A284C69c0C7",
+    polygonbridge: "0x19A6C52bd08898F8Ee5c6ba3FB67AFd184be8034",
+    meanfinance: "0x2f5ccA6f594118ef54f4157927A323BaA982Fd78",
+    mover: "0xb754601d2C8C1389E6633b1449B84CcE57788566",
+    nordfinance: "0x72252a31fd67d2facbe6d189f5861c5553474447",
+    oasisapp: "0x12b3eE60Df8ea26D03b8035Ec90434a38A82C4C7",
+    ooki: "0x9B43a385E08EE3e4b402D4312dABD11296d09E93",
+    phuture: "0x6575A93aBdFf85e5A6b97c2DB2b83bCEbc3574eC",
+    pineprotocol: "0xFB9684ec1026513241F777485911043DC2aA9a4f",
+    pods: "0xb4F88Ad000A53638F203dcA2C39828a58057d53c",
+    polychainmonsters: "0x27F68B2C092DB48928D70EA781F7dE8B844ad07B",
+    pooltogether: "0xdc0964aaacE97CF4E7476B4EEbC924730E524ade",
+  };
 
-    return data;
-}
+  return data;
+};
 
-module.exports = { getChannels }
+// Object.keys(exampleObject).find(key => exampleObject[key] === 'Geeks')
+
+module.exports = { getChannels };

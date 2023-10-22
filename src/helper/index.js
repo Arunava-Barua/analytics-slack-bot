@@ -1,3 +1,4 @@
 const { cleaner } = require('./formatChannelName')
+const { generateMessages } = require('./generateMessages')
 
-module.exports = { cleaner }
+module.exports = { cleaner, generateMessages }
