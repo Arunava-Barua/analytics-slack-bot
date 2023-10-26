@@ -1,32 +1,25 @@
 const { getChannelAddresses, getChannels } = require("../data");
 const axios = require("axios");
 
-const getChannelHealth = async () => {
-  const chainIds = [1, 137, 56];
-  const chains = [
-    "ETH_MAINNET",
-    "POLYGON_MAINNET",
-    "BSC_MAINNET",
-    // "ETH_TEST_GOERLI",
-    // "POLYGON_TEST_MUMBAI",
-    // "BSC_TESTNET",
-  ];
+const getChannelHealthFor = async (chain) => {
+  let chainId = 0, workingChannels = [], notWorkingChannels = [];
 
-  let workingChannels = [];
-  let notWorkingChannels = [];
+  if (chain == "ETH_MAINNET") chainId = 1;
+  if (chain == "POLYGON_MAINNET") chainId = 137;
+  if (chain == "BSC_MAINNET") chainId = 56;
 
   try {
     const allChannelAddresses = getChannelAddresses();
     const allChannels = getChannels();
 
-    for (let i = 0; i < chains.length; i++) {
-      await Promise.all(
-        allChannelAddresses[chains[i]].map(async (address, index) => {
-          let feedsUrl = `https://backend.epns.io/apis/v1/channels/eip155:${chainIds[i]}:${address}/feeds`;
+    const channels = allChannelAddresses[chain];
 
-          const {data} = await axios(feedsUrl);
+    await Promise.all(channels.map(async (address, index) => {
+        let feedsUrl = `https://backend.epns.io/apis/v1/channels/eip155:${chainId}:${address}/feeds`;
 
-          if (data.feeds.length > 0) {
+        const { data } = await axios(feedsUrl);
+
+        if (data.feeds.length > 0) {
             console.log(
               `${
                 data?.feeds[0].payload?.data?.app
@@ -39,29 +32,28 @@ const getChannelHealth = async () => {
               address: address,
               channelName: data?.feeds[0].payload?.data?.app,
               lastNotif: new Date(data?.feeds[0].epoch).toString().slice(0, 24),
-              chain: chains[i],
+              chain: chain,
             });
           } else {
             console.log(
               `Address: ${address} Name: ${Object.keys(allChannels).find(
                 (key) => allChannels[key] === address
-              )} NOT WORKING💥. CHAIN: ${chains[i]}`
+              )} NOT WORKING💥. CHAIN: ${chain}`
             );
 
             notWorkingChannels.push({
               address: address,
               channelName: Object.keys(allChannels).find((key) => allChannels[key] === address),
-              chain: chains[i]
+              chain: chain
             });
           }
-        })
-      );
-    }
+    }))
+
   } catch (error) {
-    console.error("Error occurred at getChannelHealth(): ", error);
+    console.error("Error occurred at getChannelHealthFor(): ", error);
   }
 
   return { workingChannels, notWorkingChannels };
 };
 
-module.exports = { getChannelHealth };
+module.exports = { getChannelHealthFor };

@@ -5,10 +5,14 @@ require("dotenv").config();
 
 const { analyticsView, homeView, generalStatusView } = require("./views/index");
 const { getChannels, getChains, getChainIds } = require("./data/index");
-const { cleaner, generateMessages } = require("./helper/index");
-const { getChannelHealth } = require("./apis/index");
+const {
+  cleaner,
+  generateMessages,
+  generateChannelAnalyticsMessages,
+} = require("./helper/index");
+const { getChannelHealth, getChannelHealthFor } = require("./apis/index");
 
-let channelName, endDate, startDate, chain;
+// let channelName, endDate, startDate, chain;
 
 const app = new App({
   token: process.env.SLACK_BOT_TOKEN,
@@ -216,7 +220,163 @@ app.action("actionId-button", async ({ body, ack, client }) => {
   }
 });
 
-// slash command
+// slash command - polygon
+app.command("/polygon", async ({ ack, body, client, logger }) => {
+  // Ack the trigger
+  await ack();
+  const channelId = body.channel_id;
+
+  try {
+    // Call the chat.postMessage method using the WebClient
+    const result = await client.chat.postMessage({
+      channel: channelId,
+      text: `Fetching details for Polygon🔔🔔🔔🔔🔔🔔🔔🔔🔔...`,
+    });
+
+    console.log("Send message results: ", result);
+  } catch (error) {
+    console.error(error);
+  }
+
+  const { workingChannels, notWorkingChannels } = await getChannelHealthFor(
+    "POLYGON_MAINNET"
+  );
+
+  const successFormattedMessagePOL = generateMessages(
+    workingChannels,
+    true,
+    "Polygon💜"
+  );
+
+  const failedFormattedMessageBSC = generateMessages(notWorkingChannels, false);
+
+  // console.log(`FORMATED MESSAGE✉️✉️✉️✉️:\n ${successFormattedMessageETH + successFormattedMessagePOL + successFormattedMessageBSC + failedFormattedMessageETH + failedFormattedMessagePOL + failedFormattedMessageBSC}`)
+
+  let formattedMessage = successFormattedMessagePOL + failedFormattedMessageBSC;
+
+  try {
+    // Call the chat.postMessage method using the WebClient
+    const result = await client.chat.postMessage({
+      channel: channelId,
+      text: `${formattedMessage}`,
+    });
+
+    console.log("Send message results: ", result);
+  } catch (error) {
+    console.error(error);
+  }
+
+  console.log("Slash polygon channel status triggered!!");
+  // console.log("Body: ", body);
+  // console.log('Client Chat: ', client.chat);
+  // console.log('Logger: ', logger);
+});
+
+// slash command - binance
+app.command("/binance", async ({ ack, body, client, logger }) => {
+  // Ack the trigger
+  await ack();
+  const channelId = body.channel_id;
+
+  try {
+    // Call the chat.postMessage method using the WebClient
+    const result = await client.chat.postMessage({
+      channel: channelId,
+      text: `Fetching details for Binance Smart Chain🔔🔔🔔🔔🔔🔔🔔🔔🔔...`,
+    });
+
+    console.log("Send message results: ", result);
+  } catch (error) {
+    console.error(error);
+  }
+
+  const { workingChannels, notWorkingChannels } = await getChannelHealthFor(
+    "BSC_MAINNET"
+  );
+
+  const successFormattedMessageBSC = generateMessages(
+    workingChannels,
+    true,
+    "Binance💛"
+  );
+
+  const failedFormattedMessageBSC = generateMessages(notWorkingChannels, false);
+
+  // console.log(`FORMATED MESSAGE✉️✉️✉️✉️:\n ${successFormattedMessageETH + successFormattedMessagePOL + successFormattedMessageBSC + failedFormattedMessageETH + failedFormattedMessagePOL + failedFormattedMessageBSC}`)
+
+  let formattedMessage = successFormattedMessageBSC + failedFormattedMessageBSC;
+
+  try {
+    // Call the chat.postMessage method using the WebClient
+    const result = await client.chat.postMessage({
+      channel: channelId,
+      text: `${formattedMessage}`,
+    });
+
+    console.log("Send message results: ", result);
+  } catch (error) {
+    console.error(error);
+  }
+
+  console.log("Slash binance channel status triggered!!");
+  // console.log("Body: ", body);
+  // console.log('Client Chat: ', client.chat);
+  // console.log('Logger: ', logger);
+});
+
+// slash command - ethereum
+app.command("/ethereum", async ({ ack, body, client, logger }) => {
+  // Ack the trigger
+  await ack();
+  const channelId = body.channel_id;
+
+  try {
+    // Call the chat.postMessage method using the WebClient
+    const result = await client.chat.postMessage({
+      channel: channelId,
+      text: `Fetching details for Ethereum🔔🔔🔔🔔🔔🔔🔔🔔🔔...`,
+    });
+
+    console.log("Send message results: ", result);
+  } catch (error) {
+    console.error(error);
+  }
+
+  const { workingChannels, notWorkingChannels } = await getChannelHealthFor(
+    "ETH_MAINNET"
+  );
+
+  const successFormattedMessageETH = generateMessages(
+    workingChannels,
+    true,
+    "Ethereum🩶"
+  );
+
+  const failedFormattedMessageETH = generateMessages(notWorkingChannels, false);
+
+  // console.log(`FORMATED MESSAGE✉️✉️✉️✉️:\n ${successFormattedMessageETH + successFormattedMessagePOL + successFormattedMessageBSC + failedFormattedMessageETH + failedFormattedMessagePOL + failedFormattedMessageBSC}`)
+
+  let formattedMessage = successFormattedMessageETH + failedFormattedMessageETH;
+
+  try {
+    // Call the chat.postMessage method using the WebClient
+    const result = await client.chat.postMessage({
+      channel: channelId,
+      text: `${formattedMessage}`,
+    });
+
+    console.log("Send message results: ", result);
+  } catch (error) {
+    console.error(error);
+  }
+
+  console.log("Slash ethereum channel status triggered!!");
+  // console.log("Body: ", body);
+  // console.log('Client Chat: ', client.chat);
+  // console.log('Logger: ', logger);
+});
+
+// slash command - health
 app.command("/health", async ({ ack, body, client, logger }) => {
   // Ack the trigger
   await ack();
@@ -234,15 +394,15 @@ app.command("/health", async ({ ack, body, client, logger }) => {
     console.error(error);
   }
 
-  let { workingChannels, notWorkingChannels } = await getChannelHealth();
+  const { workingChannels, notWorkingChannels } = await getChannelHealth();
 
   let workingEthereumChannels = [],
-  workingPolygonChannels = [],
-  workingBinanceChannels = [];
+    workingPolygonChannels = [],
+    workingBinanceChannels = [];
 
   let notWorkingEthereumChannels = [],
-  notWorkingPolygonChannels = [],
-  notWorkingBinanceChannels = [];
+    notWorkingPolygonChannels = [],
+    notWorkingBinanceChannels = [];
 
   workingChannels.map(async (channel, index) => {
     if (channel.chain == "ETH_MAINNET") {
@@ -268,17 +428,44 @@ app.command("/health", async ({ ack, body, client, logger }) => {
     }
   });
 
-  let successFormattedMessageETH = generateMessages(workingEthereumChannels, true, 'Ethereum🩶')
-  let successFormattedMessagePOL = generateMessages(workingPolygonChannels, true, 'Polygon💜')
-  let successFormattedMessageBSC = generateMessages(workingBinanceChannels, true, 'Binance💛')
+  const successFormattedMessageETH = generateMessages(
+    workingEthereumChannels,
+    true,
+    "Ethereum🩶"
+  );
+  const successFormattedMessagePOL = generateMessages(
+    workingPolygonChannels,
+    true,
+    "Polygon💜"
+  );
+  const successFormattedMessageBSC = generateMessages(
+    workingBinanceChannels,
+    true,
+    "Binance💛"
+  );
 
-  let failedFormattedMessageETH = generateMessages(notWorkingEthereumChannels, false)
-  let failedFormattedMessagePOL = generateMessages(notWorkingPolygonChannels, false)
-  let failedFormattedMessageBSC = generateMessages(notWorkingBinanceChannels, false)
+  const failedFormattedMessageETH = generateMessages(
+    notWorkingEthereumChannels,
+    false
+  );
+  const failedFormattedMessagePOL = generateMessages(
+    notWorkingPolygonChannels,
+    false
+  );
+  const failedFormattedMessageBSC = generateMessages(
+    notWorkingBinanceChannels,
+    false
+  );
 
   // console.log(`FORMATED MESSAGE✉️✉️✉️✉️:\n ${successFormattedMessageETH + successFormattedMessagePOL + successFormattedMessageBSC + failedFormattedMessageETH + failedFormattedMessagePOL + failedFormattedMessageBSC}`)
 
-  let formattedMessage = successFormattedMessageETH + failedFormattedMessageETH + successFormattedMessagePOL + failedFormattedMessagePOL + successFormattedMessageBSC + failedFormattedMessageBSC;
+  let formattedMessage =
+    successFormattedMessageETH +
+    failedFormattedMessageETH +
+    successFormattedMessagePOL +
+    failedFormattedMessagePOL +
+    successFormattedMessageBSC +
+    failedFormattedMessageBSC;
 
   try {
     // Call the chat.postMessage method using the WebClient
@@ -296,4 +483,187 @@ app.command("/health", async ({ ack, body, client, logger }) => {
   // console.log("Body: ", body);
   // console.log('Client Chat: ', client.chat);
   // console.log('Logger: ', logger);
+});
+
+// slash command - channel wise
+app.command("/channel", async ({ ack, body, client, logger }) => {
+  // Ack the trigger
+  await ack();
+  const channelId = body.channel_id;
+
+  //------[ 'thankarb', 'polygon' ]-------
+  //------[ channelName, chain ]----------
+  const parameters = body.text.toLowerCase().split(" ");
+  const chain = parameters[1];
+  let channelName = parameters[0];
+
+  let channelDetails = {
+    name: "", // Done
+    chainId: "", // Done
+    channelAddress: "", // Done
+    chainName: "", // Done
+    imageURL: "", // Done
+    notificationCount: "", // Done
+    feeds: [], // Done
+    subscriberCount: "", // Done
+    aliasAddress: "", // Done
+    channelSettings: "", // Done
+  };
+
+  try {
+    try {
+      // Call the chat.postMessage method using the WebClient
+      const result = await client.chat.postMessage({
+        channel: channelId,
+        text: `Fetching details for channel ${channelName}🔔🔔🔔🔔🔔🔔🔔🔔🔔...`,
+      });
+      console.log("Send message results: ", result);
+    } catch (error) {
+      if (!error.user) {
+        throw {
+          user: true,
+          errorCode: "SLACK_MSG_ERROR",
+          message: "Error while sending message. Try again after sometime !!",
+          source: "/channel source 1",
+          error: error,
+        };
+      } else {
+        throw error;
+      }
+    }
+
+    try {
+      const formattedChannelName = cleaner(channelName);
+      const formattedChainName = cleaner(chain);
+      const chains = getChains();
+      const channels = getChannels();
+      const chainIds = getChainIds();
+
+      channelDetails.channelAddress = channels[formattedChannelName];
+      channelDetails.chainName = chains[formattedChainName];
+      channelDetails.chainId = chainIds[formattedChainName];
+
+      console.log(
+        "Channels and chain🧟‍♂️: ",
+        channels[formattedChannelName],
+        chains[formattedChainName]
+      );
+
+      const { data } =
+        channelDetails.chainId &&
+        channelDetails.channelAddress &&
+        (await axios(
+          `https://backend.epns.io/apis/v1/channels/eip155:${channelDetails.chainId}:${channelDetails.channelAddress}/feeds`
+        ));
+
+      if (data.feeds.length > 0) {
+        channelDetails.imageURL = data.feeds[0].payload.data.icon;
+        channelDetails.notificationCount = data.feeds.length;
+        channelDetails.feeds = data.feeds;
+
+        console.log("Api Response here /channel: ", data.feeds[0]);
+      } else {
+        console.log("This channel and chain do not have any feeds😭😭");
+
+        // try {
+        //   // Call the chat.postMessage method using the WebClient
+        //   const result = await client.chat.postMessage({
+        //     channel: channelId,
+        //     text: `ℹ️ This channel and chain do not have any feeds. Try a different channel or chain!!`,
+        //   });
+        // } catch (error) {
+        //   console.error(error);
+        // }
+
+        throw {
+          user: true,
+          errorCode: "NO_CHANNEL_CHAIN_FOUND",
+          message: `ℹ️ This channel and chain do not have any feeds. Try a different channel or chain!!`,
+          source: "/channel source 2",
+        };
+      }
+    } catch (error) {
+      if (!error.user) {
+        throw {
+          user: true,
+          errorCode: "FEEDS_API_ERROR",
+          message: `❌Failed\n⚠️Please check your channel name and chain and TRY AGAIN !!!`,
+          source: "/channel source 2",
+          error: error,
+        };
+      } else {
+        throw error;
+      }
+    }
+
+    try {
+      // const {data} = (await axios(`https://${
+      //   ENV === `staging` ? "backend-staging" : "backend"
+      // }.epns.io/apis/v1/channels/eip155:${ENV == "staging" ? 5 : 1}:${address}`));
+      const { data } = await axios(
+        `https://backend.epns.io/apis/v1/channels/eip155:${channelDetails.chainId}:${channelDetails.channelAddress}`
+      );
+
+      channelDetails.subscriberCount = data.subscriber_count;
+      channelDetails.name = data.name;
+      channelDetails.aliasAddress = data.alias_address;
+      channelDetails.channelSettings = data.channel_settings;
+
+      console.log("Subscribers Api Response here /channel: ", data);
+    } catch (error) {
+      if (!error.user) {
+        throw {
+          user: true,
+          errorCode: "CHANNEL_DETAILS_API_ERROR",
+          message: `❌Failed\n⚠️Please try again after sometime !!!`,
+          source: "/channel source 3",
+          error: error,
+        };
+      } else {
+        throw error;
+      }
+    }
+
+    console.log("Channel Details at the end", channelDetails);
+    const response = generateChannelAnalyticsMessages(channelDetails);
+
+    try {
+      // Call the chat.postMessage method using the WebClient
+      const result = await client.chat.postMessage({
+        channel: channelId,
+        text: response,
+      });
+    } catch (error) {
+      if (!error.user) {
+        throw {
+          user: true,
+          errorCode: "SLACK_MSG_ERROR",
+          message: "Error while sending message. Try again after sometime !!",
+          source: "/channel source 4",
+          error: error,
+        };
+      } else {
+        throw error;
+      }
+    }
+
+    console.log("generateChannelAnalyticsMessages() result: ", response);
+
+    console.log("Slash channel channel status triggered!!");
+    // console.log("Body: ", body.text);
+    // console.log("Body: ", parameters);
+    // console.log('Client Chat: ', client.chat);
+    // console.log('Logger: ', logger);
+  } catch (error) {
+    try {
+      // Call the chat.postMessage method using the WebClient
+      const result = await client.chat.postMessage({
+        channel: channelId,
+        text: error.message,
+      });
+    } catch (error) {
+      console.log("SLACK_MSG_ERROR: Source 5");
+    }
+    console.log("Error from last try catch", error);
+  }
 });
