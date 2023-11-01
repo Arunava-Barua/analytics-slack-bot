@@ -9,7 +9,7 @@ const generateMessages = (channelsArr, working, chain = "") => {
   try {
     if (working) {
       channelsArr.map((channel, index) => {
-        let message = `${index + 1}.  ${channel.channelName}. \nLast Notif: ${
+        let message = `${index + 1}.  ${channel.channelName}. \nAddress: ${channel.address} \nLast Notif: ${
           channel.lastNotif
         }. \nChain: ${channel.chain}.\n\n`;
 
@@ -23,7 +23,7 @@ const generateMessages = (channelsArr, working, chain = "") => {
         let message = `${index + 1}.  ${
           channel.channelName[0].toUpperCase() +
           channel.channelName.slice(1, channel.channelName.length)
-        }. \nChain: ${channel.chain}.\n\n`;
+        }. \nAddress: ${channel.address} \nChain: ${channel.chain}.\n\n`;
 
         temp.push(message);
       });
