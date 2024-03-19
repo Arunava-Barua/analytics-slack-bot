@@ -1,10 +1,10 @@
 const getChannelAddresses = () => {
   const data = {
     ETH_MAINNET: [
-      "0x1a9dDEf485674fC60a269cf97FAbc6b8728A3497", // 1inch
+      // "0x1a9dDEf485674fC60a269cf97FAbc6b8728A3497", // 1inch
+      "0x48De2669db5C2da4bf36C29ef9CFd62057B4b6C8", // Price Tracker
       "0xAA940b3501176af328423d975C350d0d1BaAae50", // Aave
       "0xa2dee32662f6243da539bf6a8613f9a9e39843d3", // Angle Protocol
-      "0x0e255B1900b8cE23f8E818C7Ee08cfd5b41df748", // ApeSwap
       "0xaf962c18538A6498AcC9980b3Da74E0D9A131eBa", // Aragon
       "0x5afedef166bd626b3043cb1d53e16ea9bf863e06", // Armor
       "0x7F41abf7fDb9E4A6373EC3BAB3Df814b5CCceCC3", // Bancor
@@ -23,12 +23,12 @@ const getChannelAddresses = () => {
       "0x983110309620D911731Ac0932219af06091b6744", // ENS
       "0xfE4A6Fbd27B496855245A1e8047F693f0aDfDb08", // Push Governance
       "0x2B8ffb4460550Dbe8Ec1cEA9C1B61322dB56B082", // ETH Gas Price Tracker
-      "0x64F4fba925CbDe309acC875b8Af2feb07f2aCCA0", // ETHIndia
-      "0x77f319B1d9c43a8B729399f81515166632100744", // EthSign Signatures
+      // "0x64F4fba925CbDe309acC875b8Af2feb07f2aCCA0", // ETHIndia
+      // "0x77f319B1d9c43a8B729399f81515166632100744", // EthSign Signatures
       "0xDBc5936E4daaE94F415C39D284f6a69c4d553F2F", // 	ETH Tracker
       "0x361Cb6BE977d0113A33914A8f952Ced95747F793", // Fabwelt
       "0x361Cb6BE977d0113A33914A8f952Ced95747F793", // Fabwelt
-      "0xe8381F84a32A4C2B08c328BfF68c0E889a34F255", // GoodGhosting
+      // "0xe8381F84a32A4C2B08c328BfF68c0E889a34F255", // GoodGhosting
       "0xf4b71ceF90736Eb644Cc678b2C795ACdeaC198E1", // Google BigQuery
       "0xFb3bD022D5DAcF95eE28a6B07825D4Ff9C5b3814", // Idle Finance
       "0x91c9D4373B077eF8082F468C7c97f2c499e36F5b", // KyberSwap
@@ -36,8 +36,8 @@ const getChannelAddresses = () => {
       "0xCB1e9fA11Edd27098A6B2Ff23cB6b79183ccf8Ee", // LiFi
       "0x64A971F0D01b3555Ac60B9Bd151d5B7A75cf12Fd", // MahaDAO
       "0x8Cd0ad5C55498Aacb72b6689E1da5A284C69c0C7", // MakerDAO
-      "0x19A6C52bd08898F8Ee5c6ba3FB67AFd184be8034", // Polygon Bridge
-      "0x2f5ccA6f594118ef54f4157927A323BaA982Fd78", // Mean Finance
+      // "0x19A6C52bd08898F8Ee5c6ba3FB67AFd184be8034", // Polygon Bridge
+      // "0x2f5ccA6f594118ef54f4157927A323BaA982Fd78", // Mean Finance
       "0xb754601d2C8C1389E6633b1449B84CcE57788566", // Mover
       "0x72252a31fd67d2facbe6d189f5861c5553474447", // 	Nord Finance
       "0x12b3eE60Df8ea26D03b8035Ec90434a38A82C4C7", // Oasis.app
@@ -45,8 +45,8 @@ const getChannelAddresses = () => {
       "0x6575A93aBdFf85e5A6b97c2DB2b83bCEbc3574eC", // 	Phuture
       "0xFB9684ec1026513241F777485911043DC2aA9a4f", // Pine Protocol
       "0xb4F88Ad000A53638F203dcA2C39828a58057d53c", // Pods
-      "0x27F68B2C092DB48928D70EA781F7dE8B844ad07B", // Polychain Monsters
-      "0xdc0964aaacE97CF4E7476B4EEbC924730E524ade", // PoolTogether
+      // "0x27F68B2C092DB48928D70EA781F7dE8B844ad07B", // Polychain Monsters
+      // "0xdc0964aaacE97CF4E7476B4EEbC924730E524ade", // PoolTogether
     ],
 
     POLYGON_MAINNET: [

@@ -410,6 +410,15 @@ app.command("/health", async ({ ack, body, client, logger }) => {
     await ack();
     const channelId = body.channel_id;
 
+    //------[ '1' , 'arunava@push.org ]-------
+    const parameters = body.text.split(" ");
+    const time = Number(parameters[0]);
+    const email = Number(parameters[1]);
+
+    console.log('🎺 Parameters: ', parameters);
+    console.log('🎺 Time: ', time);
+    console.log('🎺 Email: ', email);
+
     try {
       // Call the chat.postMessage method using the WebClient
       const result = await client.chat.postMessage({
@@ -432,7 +441,7 @@ app.command("/health", async ({ ack, body, client, logger }) => {
       }
     }
 
-    const { workingChannels, notWorkingChannels } = await getChannelHealth();
+    const { workingChannels, notWorkingChannels } = await getChannelHealth(time, email);
 
     let workingEthereumChannels = [],
       workingPolygonChannels = [],
@@ -661,8 +670,12 @@ app.command("/channel", async ({ ack, body, client, logger }) => {
       // const {data} = (await axios(`https://${
       //   ENV === `staging` ? "backend-staging" : "backend"
       // }.epns.io/apis/v1/channels/eip155:${ENV == "staging" ? 5 : 1}:${address}`));
-      const {data} = await axios(
-        `https://backend.epns.io/apis/v1/channels/eip155:${channelDetails.chainId == ['1','5'].includes(channelDetails.chainId) ? channelDetails.chainId : 1}:${channelDetails.channelAddress}`
+      const { data } = await axios(
+        `https://backend.epns.io/apis/v1/channels/eip155:${
+          channelDetails.chainId == ["1", "5"].includes(channelDetails.chainId)
+            ? channelDetails.chainId
+            : 1
+        }:${channelDetails.channelAddress}`
       );
 
       channelDetails.subscriberCount = data.subscriber_count;
