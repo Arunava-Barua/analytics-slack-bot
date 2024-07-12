@@ -1,15 +1,18 @@
 const axios = require("axios");
 
-const getAllChannels = async () => {
+const getAllChannels = async (server) => {
   let i = 1;
-  let isLooping = true;
+  let isLooping = true, data;
   const allChannelsInfo = [];
   try {
     while (isLooping) {
-      const { data } = await axios.get(
-        // `https://backend-dev.epns.io/apis/v1/channels?page=${i}&limit=30`
-        `https://backend.epns.io/apis/v1/channels?page=${i}&limit=30`
-      );
+        if (server == 'prod') {
+                const response = await axios.get(`https://backend.epns.io/apis/v1/channels?page=${i}&limit=30`);
+                data = response.data;
+        } else {
+                const response = await axios.get(`https://backend-staging.epns.io/apis/v1/channels?page=${i}&limit=30`);
+                data = response.data;
+        }
 
       allChannelsInfo.push(data.channels);
 
@@ -21,14 +24,19 @@ const getAllChannels = async () => {
 
         const flattenArray = allChannelsInfo.flat();
         const formattedChannelArray = [];
+        let aliasPresent;
 
         flattenArray.map((channel, index) => {
-          const aliasPresent = channel.alias_blockchain_id
-            ? channel.alias_blockchain_id
-            : 1;
+
+        if (server == 'prod') {
+                aliasPresent = channel.alias_blockchain_id ? channel.alias_blockchain_id : 1;
+        } else {
+                aliasPresent = channel.alias_blockchain_id ? channel.alias_blockchain_id : 11155111;
+        }
 
           let channelInfo;
 
+        if (server == 'prod') {
           if (aliasPresent == 1) {
             channelInfo = {
               channelAddress: channel.channel,
@@ -45,7 +53,7 @@ const getAllChannels = async () => {
               subscriberCount: channel.subscriber_count,
               aliasAddress: channel.alias_address,
               aliasBlockchainId: channel.alias_blockchain_id,
-              chain: "POLYGON_MAINNET",
+              chain: "BSC_MAINNET",
             };
           } else {
             channelInfo = {
@@ -54,9 +62,39 @@ const getAllChannels = async () => {
               subscriberCount: channel.subscriber_count,
               aliasAddress: channel.alias_address,
               aliasBlockchainId: channel.alias_blockchain_id,
-              chain: "BSC_MAINNET",
+              chain: "POLYGON_MAINNET",
             };
           }
+       } else {
+        if (aliasPresent == 11155111) {
+            channelInfo = {
+              channelAddress: channel.channel,
+              channelName: channel.name,
+              subscriberCount: channel.subscriber_count,
+              aliasAddress: channel.alias_address,
+              aliasBlockchainId: channel.alias_blockchain_id,
+              chain: "ETH_TESTNET",
+            };
+          } else if (aliasPresent == 56) {
+            channelInfo = {
+              channelAddress: channel.channel,
+              channelName: channel.name,
+              subscriberCount: channel.subscriber_count,
+              aliasAddress: channel.alias_address,
+              aliasBlockchainId: channel.alias_blockchain_id,
+              chain: "BSC_TESTNET",
+            };
+          } else {
+            channelInfo = {
+              channelAddress: channel.channel,
+              channelName: channel.name,
+              subscriberCount: channel.subscriber_count,
+              aliasAddress: channel.alias_address,
+              aliasBlockchainId: channel.alias_blockchain_id,
+              chain: "POLYGON_TESTNET",
+            };
+          }
+        }
 
           formattedChannelArray.push(channelInfo);
         });
@@ -65,7 +103,7 @@ const getAllChannels = async () => {
           (a, b) => b.subscriberCount - a.subscriberCount
         );
 
-        // console.log(`👋 Verified Channels: ${JSON.stringify(formattedChannelArray)}`)
+        // console.log(`👋 Verified Channels: ${formattedChannelArray.length}`)
 
         return formattedChannelArray;
         // break;
@@ -75,7 +113,5 @@ const getAllChannels = async () => {
     console.log("Error while fetching all channel info from API: " + error);
   }
 };
-
-getAllChannels();
 
 module.exports = { getAllChannels };

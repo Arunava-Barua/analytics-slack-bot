@@ -20,7 +20,7 @@ const populateExcel = (data, fileName) => {
 }
 
 // Function to send email with attachment
-const sendEmailWithAttachment = async (email, attachments, fileNames) => {
+const sendEmailWithAttachment = async (time, emails, attachments, fileNames, server) => {
   try {
     const transporter = nodemailer.createTransport({
       // Provide your email service configuration
@@ -30,14 +30,16 @@ const sendEmailWithAttachment = async (email, attachments, fileNames) => {
         // user: "rahulbarua31@gmail.com",
         user: "arunava@push.org",
         // pass: "wvdp hyoe afru brfx", // rahulbarua31@gmail.com
-        pass: `${process.env.GMAIL_APP_PASSWORD}`, // arunava@push.org
+        pass: "leel amsv ovny vuyl",   //arunava@push.org
       },
     });
 
+    const emailSubject = `Channel Health Excel Report ${server} (${time} days)`;
+
     const mailOptions = {
       from: "arunava@push.org",
-      to: email, // Convert array of emails to comma-separated string
-      subject: "Channel Health Excel Report",
+      to: emails.join(', '), // Convert array of emails to comma-separated string
+      subject: emailSubject,
       text: "Hi there, this email consist of two excel sheet attachments containing both working and non-working channels.",
       attachments: [
         {
@@ -58,14 +60,14 @@ const sendEmailWithAttachment = async (email, attachments, fileNames) => {
   }
 }
 
-const sendReportViaEmail = async ( workingChannels, notWorkingChannels, email ) => {
+const sendReportViaEmail = async ( workingChannels, notWorkingChannels, emails, time, server) => {
   try {
     const workingExcelAttachment1 = await populateExcel(workingChannels, 'WorkingChannels');
     const notWorkingExcelAttachment2 = await populateExcel(notWorkingChannels, 'NotWorkingChannels');
 
-    const emails = ["rahulbarua31@gmail.com"];
+    // const emails = ["rahulbarua31@gmail.com"];
 
-    await sendEmailWithAttachment(email, [workingExcelAttachment1, notWorkingExcelAttachment2], ['WorkingChannels', 'NotWorkingChannels']);
+    await sendEmailWithAttachment(time, emails, [workingExcelAttachment1, notWorkingExcelAttachment2], ['WorkingChannels', 'NotWorkingChannels'], server);
 
     console.log("Email sent with attachment successfully.");
 
@@ -74,12 +76,12 @@ const sendReportViaEmail = async ( workingChannels, notWorkingChannels, email ) 
   }
 }
 
-const getChannelHealth = async (time, email) => {
+const getChannelHealth = async (time, emails, run, server) => {
   let workingChannels = [];
   let notWorkingChannels = [];
 
   try {
-    const allChannelsInfos = await getAllChannels();
+    const allChannelsInfos = await getAllChannels(server);
 
     for (let i = 0; i < allChannelsInfos.length; i++) {
       // allChannelsInfos[i]
@@ -89,15 +91,23 @@ const getChannelHealth = async (time, email) => {
       const chainName = channel.chain;
       const subscriberCount = channel.subscriberCount;
 
-      let channelId = channel.aliasBlockchainId ? channel.aliasBlockchainId : 1;
-      let data;
+      let channelId;
+      let data, feedsUrl;
 
       try {
         // let feedsUrl = `https://backend-dev.epns.io/apis/v1/channels/eip155:${channelId}:${channelAddress}/feeds`;
-        let feedsUrl = `https://backend.epns.io/apis/v1/channels/eip155:${channelId}:${channelAddress}/feeds`;
+
+        if (server == 'prod') {
+                channelId = channel.aliasBlockchainId ? channel.aliasBlockchainId : 1;
+                feedsUrl = `https://backend.epns.io/apis/v1/channels/eip155:${channelId}:${channelAddress}/feeds`;
+        } else {
+                channelId = channel.aliasBlockchainId ? channel.aliasBlockchainId : 11155111;
+                feedsUrl = `https://backend-staging.epns.io/apis/v1/channels/eip155:${channelId}:${channelAddress}/feeds`;
+        }
 
         const response = await axios.get(feedsUrl);
         data = response.data;
+
       } catch (error) {
         console.log(`🤖API Error ${error}`);
       }
@@ -122,7 +132,7 @@ const getChannelHealth = async (time, email) => {
               data?.feeds[0].payload?.data?.app
             } WORKING✅. Last Notif: ${new Date(data?.feeds[0].epoch)
               .toString()
-              .slice(0, 24)}. CHAIN: ${data?.feeds[0]?.source}`
+              .slice(0, 24)}. CHAIN: ${data?.feeds[0]?.source}. Subscribers: ${subscriberCount}. Address: ${channelAddress}.`
           );
 
           workingChannels.push({
@@ -134,7 +144,11 @@ const getChannelHealth = async (time, email) => {
           });
         } else {
           console.log(
-            `Address: ${channelAddress} Name: ${channelName} NOT WORKING💥. CHAIN: ${chainName}`
+            `Address: ${channelAddress}.
+             Name: ${channelName} NOT WORKING💥.
+             CHAIN: ${chainName}.
+             Subscribers: ${subscriberCount}.
+             Last Notif: ${ new Date(data?.feeds[0].epoch).toString().slice(0, 24) }`
           );
 
           notWorkingChannels.push({
@@ -147,7 +161,11 @@ const getChannelHealth = async (time, email) => {
         }
       } else {
         console.log(
-          `Address: ${channelAddress} Name: ${channelName} NOT WORKING💥. CHAIN: ${chainName}`
+          `Address: ${channelAddress}
+           Name: ${channelName} NOT WORKING💥.
+           CHAIN: ${chainName}
+           Subscribers: ${subscriberCount}
+           Last Notif: ${null}`
         );
 
         notWorkingChannels.push({
@@ -170,7 +188,17 @@ const getChannelHealth = async (time, email) => {
     console.error("Error occurred at getChannelHealth(): ", error);
   }
 
-  await sendReportViaEmail(workingChannels, notWorkingChannels, email);
+  let allEmails = [];
+
+  if (run) {
+        emails.map((email, index) => {
+                allEmails.push(email);
+        });
+  } else {
+        allEmails.push(emails);
+  }
+
+  await sendReportViaEmail(workingChannels, notWorkingChannels, allEmails, time, server);
 
   return { workingChannels, notWorkingChannels };
 };
@@ -180,10 +208,10 @@ module.exports = { getChannelHealth };
 const run = async () => {
   const emails = ["rahulbarua31@gmail.com"];
   const run = true;
-  const { workingChannels, notWorkingChannels } = await getChannelHealth(15, emails, run);
+  const { workingChannels, notWorkingChannels } = await getChannelHealth(30, emails, run);
 
   console.log(`✅Working Channels: ${workingChannels.length}`);
   console.log(`🔥Not Working Channels: ${notWorkingChannels.length}`);
 };
 
-run();
+// run();

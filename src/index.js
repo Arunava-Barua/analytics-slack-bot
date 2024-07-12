@@ -410,20 +410,25 @@ app.command("/health", async ({ ack, body, client, logger }) => {
     await ack();
     const channelId = body.channel_id;
 
-    //------[ '1' , 'arunava@push.org ]-------
+    //------[ '1' ]-------
     const parameters = body.text.split(" ");
     const time = Number(parameters[0]);
     const email = parameters[1];
+    const server = parameters[2] ? parameters[2].toLowerCase() : 'prod';
+
+    const slackMessage = `Fetching Details for ${email} (${time} days)🔔 ${server} Your analytics report will be ready in about 10mins. Thanks for your patience😊`;
 
     console.log('🎺 Parameters: ', parameters);
     console.log('🎺 Time: ', time);
     console.log('🎺 Email: ', email);
+    console.log('🎺 Message here: ', slackMessage);
+    console.log('Server: ', server);
 
     try {
       // Call the chat.postMessage method using the WebClient
       const result = await client.chat.postMessage({
         channel: channelId,
-        text: `Fetching details🔔...`,
+        text: slackMessage,
       });
 
       console.log("Send message results: ", result);
@@ -441,7 +446,7 @@ app.command("/health", async ({ ack, body, client, logger }) => {
       }
     }
 
-    const { workingChannels, notWorkingChannels } = await getChannelHealth(time, email);
+    const { workingChannels, notWorkingChannels } = await getChannelHealth(time, email, false, server);
 
     let workingEthereumChannels = [],
       workingPolygonChannels = [],
@@ -452,25 +457,25 @@ app.command("/health", async ({ ack, body, client, logger }) => {
       notWorkingBinanceChannels = [];
 
     workingChannels.map(async (channel, index) => {
-      if (channel.chain == "ETH_MAINNET") {
+      if (channel.chain == "ETH_MAINNET" || channel.chain == "ETH_TESTNET") {
         workingEthereumChannels.push(channel);
       }
-      if (channel.chain == "POLYGON_MAINNET") {
+      if (channel.chain == "POLYGON_MAINNET" || channel.chain == "POLYGON_TESTNET") {
         workingPolygonChannels.push(channel);
       }
-      if (channel.chain == "BSC_MAINNET") {
+      if (channel.chain == "BSC_MAINNET" || channel.chain == "BSC_TESTNET") {
         workingBinanceChannels.push(channel);
       }
     });
 
     notWorkingChannels.map(async (channel, index) => {
-      if (channel.chain == "ETH_MAINNET") {
+      if (channel.chain == "ETH_MAINNET" || channel.chain == "ETH_TESTNET") {
         notWorkingEthereumChannels.push(channel);
       }
-      if (channel.chain == "POLYGON_MAINNET") {
+      if (channel.chain == "POLYGON_MAINNET" || channel.chain == "POLYGON_TESTNET") {
         notWorkingPolygonChannels.push(channel);
       }
-      if (channel.chain == "BSC_MAINNET") {
+      if (channel.chain == "BSC_MAINNET" || "BSC_TESTNET") {
         notWorkingBinanceChannels.push(channel);
       }
     });
@@ -506,13 +511,7 @@ app.command("/health", async ({ ack, body, client, logger }) => {
 
     // console.log(`FORMATED MESSAGE✉️✉️✉️✉️:\n ${successFormattedMessageETH + successFormattedMessagePOL + successFormattedMessageBSC + failedFormattedMessageETH + failedFormattedMessagePOL + failedFormattedMessageBSC}`)
 
-    let formattedMessage =
-      successFormattedMessageETH +
-      failedFormattedMessageETH +
-      successFormattedMessagePOL +
-      failedFormattedMessagePOL +
-      successFormattedMessageBSC +
-      failedFormattedMessageBSC;
+    let formattedMessage = `Your report is ready🥳. Check your email to find the excel reports. Have a good day☀️`;
 
     try {
       // Call the chat.postMessage method using the WebClient
@@ -553,6 +552,7 @@ app.command("/health", async ({ ack, body, client, logger }) => {
     console.log("Error from last try catch /health", error);
   }
 });
+
 
 // slash command - channel wise
 app.command("/channel", async ({ ack, body, client, logger }) => {
