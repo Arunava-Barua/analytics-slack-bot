@@ -413,7 +413,7 @@ app.command("/health", async ({ ack, body, client, logger }) => {
     //------[ '1' , 'arunava@push.org ]-------
     const parameters = body.text.split(" ");
     const time = Number(parameters[0]);
-    const email = Number(parameters[1]);
+    const email = parameters[1];
 
     console.log('🎺 Parameters: ', parameters);
     console.log('🎺 Time: ', time);

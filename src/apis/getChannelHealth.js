@@ -87,6 +87,7 @@ const getChannelHealth = async (time, email) => {
       const channelName = channel.channelName;
       const channelAddress = channel.channelAddress;
       const chainName = channel.chain;
+      const subscriberCount = channel.subscriberCount;
 
       let channelId = channel.aliasBlockchainId ? channel.aliasBlockchainId : 1;
       let data;
@@ -128,6 +129,7 @@ const getChannelHealth = async (time, email) => {
             address: channelAddress,
             channelName: data?.feeds[0].payload?.data?.app,
             lastNotif: new Date(data?.feeds[0].epoch).toString().slice(0, 24),
+            subscribers: subscriberCount,
             chain: chainName,
           });
         } else {
@@ -138,6 +140,8 @@ const getChannelHealth = async (time, email) => {
           notWorkingChannels.push({
             address: channelAddress,
             channelName: channelName,
+            lastNotif: new Date(data?.feeds[0].epoch).toString().slice(0, 24),
+            subscribers: subscriberCount,
             chain: chainName,
           });
         }
@@ -149,6 +153,8 @@ const getChannelHealth = async (time, email) => {
         notWorkingChannels.push({
           address: channelAddress,
           channelName: channelName,
+          lastNotif: null,
+          subscribers: subscriberCount,
           chain: chainName,
         });
       }
@@ -172,7 +178,9 @@ const getChannelHealth = async (time, email) => {
 module.exports = { getChannelHealth };
 
 const run = async () => {
-  const { workingChannels, notWorkingChannels } = await getChannelHealth(15);
+  const emails = ["rahulbarua31@gmail.com"];
+  const run = true;
+  const { workingChannels, notWorkingChannels } = await getChannelHealth(15, emails, run);
 
   console.log(`✅Working Channels: ${workingChannels.length}`);
   console.log(`🔥Not Working Channels: ${notWorkingChannels.length}`);
