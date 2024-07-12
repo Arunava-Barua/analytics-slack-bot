@@ -27,7 +27,7 @@ const getChannelHealthFor = async (chain) => {
 
         /* *************************************************************** */
 
-        if (data.feeds.length > 0) {
+        if (data?.feeds.length > 0) {
           const variableDate = new Date(
             new Date(data?.feeds[0].epoch).toString().slice(0, 24)
           );
